@@ -32,6 +32,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -177,8 +178,18 @@ public class DexCollectionService extends Service {
     public void setRetryTimer() {
         Calendar calendar = Calendar.getInstance();
         AlarmManager alarm = (AlarmManager)getSystemService(ALARM_SERVICE);
-        alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + (1000 * 60 * 2), PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0));
-        Log.w(TAG, "Retry set for" +  (((calendar.getTimeInMillis() + (1000 * 60 * 2)) - (int) (new Date().getTime())) / (60000)) + "mins from now!");
+
+        final long now = calendar.getTimeInMillis();
+        final long triggerAtMillis = now + (1000L * 60L * 2L);
+        final PendingIntent service = PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // TODO: Is exact wake-up needed?
+            alarm.setExact(AlarmManager.RTC_WAKEUP, triggerAtMillis, service);
+        } else {
+            alarm.set(AlarmManager.RTC_WAKEUP, triggerAtMillis, service);
+        }
+        Log.w(TAG, "Retry set for " +  ((triggerAtMillis - now) / 60000L) + " minutes from now!");
     }
 
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
