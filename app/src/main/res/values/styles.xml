@@ -1,16 +1,17 @@
 <resources>
+    <color name="background">#212121</color>
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="android:Theme.Holo">
 
-        <item name="android:background">#212121</item>
+        <item name="android:background">@color/background</item>
         <item name="android:actionBarStyle">@style/MyActionBar</item>
     </style>
 
     <!-- ActionBar styles -->
     <style name="MyActionBar"
         parent="@android:style/Widget.Holo.ActionBar">
-        <item name="android:background">#212121</item>
+        <item name="android:background">@color/background</item>
         <!--<item name="android:color">#616161</item>-->
     </style>
 </resources>
