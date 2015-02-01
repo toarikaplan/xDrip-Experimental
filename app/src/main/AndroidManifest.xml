@@ -155,6 +155,12 @@
             android:name=".SystemStatus"
             android:label="@string/title_activity_system_status" >
         </activity>
+        
+        <receiver android:name="com.eveningoutpost.dexdrip.UtilityModels.NotificationsReceiver" >
+            <intent-filter>
+                <action android:name="com.eveningoutpost.dexdrip.UtilityModels.Notifications" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
