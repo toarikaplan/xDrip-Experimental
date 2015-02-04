@@ -113,7 +113,7 @@ public class Notifications {
                     if (bgReading.hide_slope) {
                         bgAlert(bgReading.displayValue(mContext), "");
                     } else {
-                        bgAlert(bgReading.displayValue(mContext), bgReading.slopeArrow());
+                        bgAlert(bgReading.displayValue(mContext), BgReading.slopeArrow());
                     }
                 }
             } else {
@@ -207,7 +207,7 @@ public class Notifications {
         if (bg_lights) { mBuilder.setLights(0xff00ff00, 300, 1000);}
         if (bg_sound && !bg_sound_in_silent) { mBuilder.setSound(Uri.parse(bg_notification_sound), AudioAttributes.FLAG_AUDIBILITY_ENFORCED);}
         if (bg_sound && bg_sound_in_silent) { soundAlert(bg_notification_sound);}
-        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE);
+        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(notificationId);
         mNotifyMgr.notify(notificationId, mBuilder.build());
     }
@@ -217,14 +217,14 @@ public class Notifications {
         if (calibration_vibrate) { mBuilder.setVibrate(vibratePattern);}
         if (calibration_lights) { mBuilder.setLights(0xff00ff00, 300, 1000);}
         if (calibration_sound) { mBuilder.setSound(Uri.parse(calibration_notification_sound), AudioAttributes.FLAG_AUDIBILITY_ENFORCED);}
-        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE);
+        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(notificationId);
         mNotifyMgr.notify(notificationId, mBuilder.build());
     }
 
     private void notificationUpdate(String title, String content, Intent intent, int notificationId) {
         NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent);
-        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE);
+        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.notify(notificationId, mBuilder.build());
     }
 
@@ -242,7 +242,7 @@ public class Notifications {
     }
 
     private void notificationDismiss(int notificationId) {
-        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE);
+        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(notificationId);
     }
 
