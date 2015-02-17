@@ -126,8 +126,7 @@ public class DexCollectionService extends Service {
                     }
                 }
                 if(key.compareTo("dex_collection_method") == 0) {
-                    CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter();
-                    collectionServiceStarter.start(getApplicationContext());
+                    CollectionServiceStarter.start(getApplicationContext());
                 }
             }
         };

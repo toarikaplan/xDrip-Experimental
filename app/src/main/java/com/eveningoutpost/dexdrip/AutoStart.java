@@ -12,7 +12,6 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 public class AutoStart extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter();
-        collectionServiceStarter.start(context);
+        CollectionServiceStarter.start(context);
     }
 }

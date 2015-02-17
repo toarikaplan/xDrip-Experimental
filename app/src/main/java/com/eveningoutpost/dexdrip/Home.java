@@ -94,8 +94,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         super.onResume();
         checkEula();
 
-        CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter();
-        collectionServiceStarter.start(getApplicationContext());
+        CollectionServiceStarter.start(getApplicationContext());
 
         _broadcastReceiver = new BroadcastReceiver() {
             @Override
