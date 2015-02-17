@@ -394,18 +394,8 @@ public class WixelReader  extends Thread {
         mStop = true;
         interrupt();
     }
-    public void setSerialDataToTransmitterRawData(int raw_data ,int sensor_battery_leve, Long CaptureTime) {
 
-        TransmitterData transmitterData = TransmitterData.create(raw_data, sensor_battery_leve, CaptureTime);
-        if (transmitterData != null) {
-            Sensor sensor = Sensor.currentSensor();
-            if (sensor != null) {
-                BgReading bgReading = BgReading.create(transmitterData.raw_data, mContext, CaptureTime);
-                sensor.latest_battery_level = transmitterData.sensor_battery_level;
-                sensor.save();
-            } else {
-                Log.w(TAG, "No Active Sensor, Data only stored in Transmitter Data");
-            }
-        }
+    public void setSerialDataToTransmitterRawData(int raw_data ,int sensor_battery_level, long captureTime) {
+        DexCollectionService.saveRawData(raw_data, sensor_battery_level, captureTime, mContext);
     }
 }

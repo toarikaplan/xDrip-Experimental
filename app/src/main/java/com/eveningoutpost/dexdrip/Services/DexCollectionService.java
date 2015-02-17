@@ -46,9 +46,13 @@ import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 
+import java.nio.charset.Charset;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.UUID;
+
+import static com.activeandroid.ActiveAndroid.beginTransaction;
+import static com.activeandroid.ActiveAndroid.endTransaction;
+import static com.activeandroid.ActiveAndroid.setTransactionSuccessful;
 
 @TargetApi(android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class DexCollectionService extends Service {
@@ -249,7 +253,7 @@ public class DexCollectionService extends Service {
         final byte[] data = characteristic.getValue();
 
         if (data != null && data.length > 0) {
-            setSerialDataToTransmitterRawData(data, data.length);
+            setSerialDataToTransmitterRawData(data, data.length, this);
         }
     }
 
@@ -360,21 +364,65 @@ public class DexCollectionService extends Service {
         }
     }
 
-    public void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
+    public static void setSerialDataToTransmitterRawData(byte[] buffer, int len, Context context) {
 
-        Log.w(TAG, "received some data!");
-        Long timestamp = new Date().getTime();
-        TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
-        if (transmitterData != null) {
-            Sensor sensor = Sensor.currentSensor();
-            if (sensor != null) {
-                sensor.latest_battery_level = transmitterData.sensor_battery_level;
-                sensor.save();
+        try {
+            Log.w(TAG, "received some data: " + new String(buffer, 0, len, Charset.forName("ISO-8859-1")));
+        } catch (Exception ex) {
+            Log.w(TAG, "received some data!");
+        }
 
-                BgReading bgReading = BgReading.create(transmitterData.raw_data, this, timestamp);
-            } else {
-                Log.w(TAG, "No Active Sensor, Data only stored in Transmitter Data");
+        newSerialDataReceivedAt(buffer, len, context, System.currentTimeMillis());
+    }
+
+    public static synchronized void newSerialDataReceivedAt(byte[] buffer, int len, Context context, long timestamp) {
+        beginTransaction();
+        try {
+            TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp, context);
+            if (transmitterData == null) {
+                Log.w(TAG, "Data was ignored.");
+                setTransactionSuccessful();
+                return;
             }
+
+            updateSensorAndAddBgReading(context, transmitterData);
+
+            setTransactionSuccessful();
+        } finally {
+            endTransaction();
+        }
+    }
+
+    public static synchronized void saveRawData(int raw_data, int sensor_battery_level, long captureTime, Context context) {
+        beginTransaction();
+        try {
+            TransmitterData transmitterData = TransmitterData.create(raw_data, sensor_battery_level, captureTime, context);
+            if (transmitterData == null) {
+                Log.w(TAG, "Data was ignored.");
+                setTransactionSuccessful();
+                return;
+            }
+
+            updateSensorAndAddBgReading(context, transmitterData);
+
+            setTransactionSuccessful();
+        } finally {
+            endTransaction();
+        }
+    }
+
+    private static void updateSensorAndAddBgReading(Context context, TransmitterData transmitterData) {
+        Sensor sensor = Sensor.currentSensor();
+        if (sensor != null) {
+            sensor.latest_battery_level = transmitterData.sensor_battery_level;
+            sensor.save();
+        } else {
+            transmitterData = null;
+            Log.w(TAG, "No Active Sensor, Data only stored in Transmitter Data");
+        }
+
+        if (transmitterData != null) {
+            BgReading.create(transmitterData.raw_data, context);
         }
     }
 }

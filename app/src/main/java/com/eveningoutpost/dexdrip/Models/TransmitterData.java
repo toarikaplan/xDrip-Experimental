@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import android.content.Context;
 import android.provider.BaseColumns;
 import android.util.Log;
 
@@ -34,20 +35,17 @@ public class TransmitterData extends Model {
     @Column(name = "uuid", index = true)
     public String uuid;
 
-    public static TransmitterData create(byte[] buffer, int len, Long timestamp) {
-                StringBuilder data_string = new StringBuilder();
-        if (len < 6) { return null; };
+    public static TransmitterData create(final byte[] buffer, final int len, final long timestamp, Context context) {
+        StringBuilder data_string = new StringBuilder();
+        if (len < 6) { return null; }
 
         for (int i = 0; i < len; ++i) {
             data_string.append((char) buffer[i]);
         }
         String[] data = data_string.toString().split("\\s+");
 
-        randomDelay(100, 2000);
+        randomDelay(100, 2000); // ??
         TransmitterData lastTransmitterData = TransmitterData.last();
-        if (lastTransmitterData != null && lastTransmitterData.raw_data == Integer.parseInt(data[0]) && Math.abs(lastTransmitterData.timestamp - timestamp) < (10000)) { //Stop allowing duplicate data, its bad!
-            return null;
-        }
 
         TransmitterData transmitterData = new TransmitterData();
         if(data.length > 1) {
@@ -58,24 +56,35 @@ public class TransmitterData extends Model {
         transmitterData.timestamp = timestamp;
         transmitterData.uuid = UUID.randomUUID().toString();
 
+        if (getDetector(context).isConsideredDuplicate(lastTransmitterData, transmitterData))
+            return null;
+
         transmitterData.save();
         return transmitterData;
     }
 
-    public static TransmitterData create(int raw_data ,int sensor_battery_level, long timestamp) {
-        randomDelay(100, 2000);
+    public static TransmitterData create(int raw_data ,int sensor_battery_level, long timestamp, Context context) {
+        randomDelay(100, 2000); // ??
+
         TransmitterData lastTransmitterData = TransmitterData.last();
-        if (lastTransmitterData != null && lastTransmitterData.raw_data == raw_data && Math.abs(lastTransmitterData.timestamp - new Date().getTime()) < (10000)) { //Stop allowing duplicate data, its bad!
-            return null;
-        }
 
         TransmitterData transmitterData = new TransmitterData();
         transmitterData.sensor_battery_level = sensor_battery_level;
-        transmitterData.raw_data = raw_data ;
+        transmitterData.raw_data = raw_data;
         transmitterData.timestamp = timestamp;
         transmitterData.uuid = UUID.randomUUID().toString();
+
+        if (getDetector(context).isConsideredDuplicate(lastTransmitterData, transmitterData))
+            return null;
+
         transmitterData.save();
         return transmitterData;
+    }
+
+    private static TransmitterDataDuplicateDetector getDetector(Context context) {
+        // TODO: Load different detectors depending on current active sources.
+
+        return new TransmitterDataDuplicateDetector();
     }
 
     public static TransmitterData last() {
