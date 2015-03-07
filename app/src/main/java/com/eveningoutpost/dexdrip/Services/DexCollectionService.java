@@ -362,7 +362,7 @@ public class DexCollectionService extends Service {
                 return;
             }
 
-            updateSensorAndAddBgReading(context, transmitterData);
+            updateSensorAndAddBgReading(context, transmitterData, timestamp);
 
             setTransactionSuccessful();
         } finally {
@@ -380,7 +380,7 @@ public class DexCollectionService extends Service {
                 return;
             }
 
-            updateSensorAndAddBgReading(context, transmitterData);
+            updateSensorAndAddBgReading(context, transmitterData, captureTime);
 
             setTransactionSuccessful();
         } finally {
@@ -388,7 +388,7 @@ public class DexCollectionService extends Service {
         }
     }
 
-    private static void updateSensorAndAddBgReading(Context context, TransmitterData transmitterData) {
+    private static void updateSensorAndAddBgReading(Context context, TransmitterData transmitterData, long captureTime) {
         Sensor sensor = Sensor.currentSensor();
         if (sensor != null) {
             sensor.latest_battery_level = transmitterData.sensor_battery_level;
@@ -399,7 +399,7 @@ public class DexCollectionService extends Service {
         }
 
         if (transmitterData != null) {
-            BgReading.create(transmitterData.raw_data, context);
+            BgReading.create(transmitterData.raw_data, context, captureTime);
         }
     }
 }
