@@ -44,7 +44,7 @@ public class TransmitterData extends Model {
         }
         String[] data = data_string.toString().split("\\s+");
 
-        randomDelay(100, 2000); // ??
+        //randomDelay(100, 2000); // ??
         TransmitterData lastTransmitterData = TransmitterData.last();
 
         TransmitterData transmitterData = new TransmitterData();
@@ -64,7 +64,7 @@ public class TransmitterData extends Model {
     }
 
     public static TransmitterData create(int raw_data ,int sensor_battery_level, long timestamp, Context context) {
-        randomDelay(100, 2000); // ??
+        //randomDelay(100, 2000); // ??
 
         TransmitterData lastTransmitterData = TransmitterData.last();
 
