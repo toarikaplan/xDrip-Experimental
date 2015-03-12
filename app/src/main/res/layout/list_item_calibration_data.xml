@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    android:id="@+id/list_item_calibration_data"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/list_data_bg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:text="bg"/>
+
+    <TextView
+        android:id="@+id/estimate_raw"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="estimate_raw"
+        android:textSize="12sp"/>
+
+    <TextView
+        android:id="@+id/list_data_slope"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="slope"
+        android:textSize="12sp"/>
+
+    <TextView
+        android:id="@+id/list_data_intercept"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="intercept"
+        android:textSize="12sp"/>
+
+    <TextView
+        android:id="@+id/list_data_timestamp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="timestamp"
+        android:textSize="12sp"/>
+
+
+</LinearLayout>

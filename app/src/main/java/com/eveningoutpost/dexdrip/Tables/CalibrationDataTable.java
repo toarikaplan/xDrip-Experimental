@@ -2,7 +2,6 @@ package com.eveningoutpost.dexdrip.Tables;
 
 import android.app.ListActivity;
 import android.content.Context;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
@@ -11,12 +10,12 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.activeandroid.Cache;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.NavigationDrawerFragment;
 import com.eveningoutpost.dexdrip.R;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -31,7 +30,7 @@ public class CalibrationDataTable extends ListActivity implements NavigationDraw
     }
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
@@ -53,16 +52,18 @@ public class CalibrationDataTable extends ListActivity implements NavigationDraw
 
 
     public static class CalibrationDataCursorAdapterViewHolder {
-        TextView raw_data_id;
-        TextView raw_data_value;
-        TextView raw_data_slope;
-        TextView raw_data_timestamp;
+        private final TextView timestamp;
+        private final TextView bg;
+        private final TextView estimate_raw;
+        private final TextView slope;
+        private final TextView intercept;
 
         public CalibrationDataCursorAdapterViewHolder(View root) {
-            raw_data_id = (TextView) root.findViewById(R.id.raw_data_id);
-            raw_data_value = (TextView) root.findViewById(R.id.raw_data_value);
-            raw_data_slope = (TextView) root.findViewById(R.id.raw_data_slope);
-            raw_data_timestamp = (TextView) root.findViewById(R.id.raw_data_timestamp);
+            bg = (TextView) root.findViewById(R.id.list_data_bg);
+            estimate_raw = (TextView) root.findViewById(R.id.estimate_raw);
+            slope = (TextView) root.findViewById(R.id.list_data_slope);
+            intercept = (TextView) root.findViewById(R.id.list_data_intercept);
+            timestamp = (TextView) root.findViewById(R.id.list_data_timestamp);
         }
     }
 
@@ -72,14 +73,14 @@ public class CalibrationDataTable extends ListActivity implements NavigationDraw
 
         public CalibrationDataCursorAdapter(Context context, List<Calibration> calibrations) {
             this.context = context;
-            if(calibrations == null)
+            if (calibrations == null)
                 calibrations = new ArrayList<>();
-            
+
             this.calibrations = calibrations;
         }
 
         public View newView(Context context, ViewGroup parent) {
-            final View view = LayoutInflater.from(context).inflate(R.layout.raw_data_list_item, parent, false);
+            final View view = LayoutInflater.from(context).inflate(R.layout.list_item_calibration_data, parent, false);
 
             final CalibrationDataCursorAdapterViewHolder holder = new CalibrationDataCursorAdapterViewHolder(view);
             view.setTag(holder);
@@ -89,10 +90,11 @@ public class CalibrationDataTable extends ListActivity implements NavigationDraw
 
         public void bindView(View view, Context context, Calibration calibration) {
             final CalibrationDataCursorAdapterViewHolder tag = (CalibrationDataCursorAdapterViewHolder) view.getTag();
-            tag.raw_data_id.setText(Double.toString(calibration.bg));
-            tag.raw_data_value.setText(Double.toString(calibration.estimate_raw_at_time_of_calibration));
-            tag.raw_data_slope.setText(Double.toString(calibration.slope));
-            tag.raw_data_timestamp.setText(Double.toString(calibration.intercept));
+            tag.bg.setText(String.format("BG: %.2f", calibration.bg));
+            tag.estimate_raw.setText(String.format("Est.RAW: %.2f", calibration.estimate_raw_at_time_of_calibration));
+            tag.slope.setText(String.format("Slope: %.2f", calibration.slope));
+            tag.intercept.setText(String.format("Intercept: %.2f", calibration.intercept));
+            tag.timestamp.setText(new Date(calibration.getTimestampInMillis()).toString());
         }
 
         @Override
